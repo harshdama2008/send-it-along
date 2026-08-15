@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Send It Along — screen drafts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Figtree:wght@400;500;600;700&family=Gabarito:wght@400..700&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --surface:#F7F7F8;
+    --surface-2:#EFEFF2;
+    --border:#E5E5E9;
+    --border-strong:#C9C9D0;
+    --text:#121214;
+    --muted:#6C6C74;
+    --dim:#9A9AA3;
+    --open:#12924A;
+    --blue:#2E7BC4;
+    --ink:#2E7BC4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:#EDEDF0;
+    font-family:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--text);
+    padding:48px 32px 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page-head{max-width:1400px;margin:0 auto 40px;}
+  .page-head h1{font-size:22px;font-weight:600;letter-spacing:-0.02em;}
+  .page-head p{color:var(--muted);font-size:14px;margin-top:6px;}
+
+  .row{
+    display:flex;gap:36px;justify-content:flex-start;
+    max-width:1400px;margin:0 auto;
+    overflow-x:auto;padding-bottom:24px;
+  }
+  .slot{flex:0 0 auto;width:340px;}
+  .slot-label{
+    font-size:11px;letter-spacing:0.09em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:12px;font-weight:600;
+  }
+  .slot-note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5;}
+
+  .phone{
+    width:340px;height:716px;background:var(--bg);
+    border:1px solid var(--border);border-radius:34px;
+    display:flex;flex-direction:column;overflow:hidden;position:relative;
+  }
+  .status{
+    height:44px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:12px;color:var(--muted);font-weight:600;
+  }
+  .body{flex:1;overflow:hidden;padding:52px 20px 0;display:flex;flex-direction:column;}
+  .foot{flex:0 0 auto;padding:18px 20px 30px;border-top:1px solid var(--border);background:var(--bg);}
+
+  /* type */
+  .brand{font-size:19px;font-weight:600;letter-spacing:-0.02em;}
+  .tagline{font-size:12px;color:var(--muted);margin-top:3px;}
+  h2.title{font-size:21px;font-weight:600;letter-spacing:-0.025em;line-height:1.25;white-space:nowrap;}
+  .sub{font-size:13px;color:var(--muted);margin-top:6px;}
+  .seclabel{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.02em;margin-bottom:10px;}
+
+  /* controls */
+  .input{
+    display:flex;align-items:center;gap:10px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:13px;padding:14px 14px;font-size:15px;color:var(--dim);
+  }
+  .input.active{border-color:var(--border-strong);color:var(--text);}
+  .caret{width:1.5px;height:17px;background:var(--ink);display:inline-block;}
+
+  .sugg{margin-top:6px;}
+  .sugg-row{
+    display:flex;align-items:center;gap:12px;padding:13px 4px;
+    border-bottom:1px solid var(--border);
+  }
+  .sugg-row:last-child{border-bottom:none;}
+  .sugg-main{font-size:14px;}
+  .sugg-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    padding:9px 14px;border-radius:999px;font-size:13px;
+    border:1px solid var(--border);background:var(--surface);color:var(--muted);
+  }
+  .chip.on{background:var(--ink);color:#FFFFFF;border-color:var(--ink);font-weight:600;}
+
+  .sizes{display:flex;flex-direction:column;gap:8px;}
+  .size{
+    border:1px solid var(--border);background:var(--surface);
+    border-radius:13px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .size.on{border-color:var(--ink);background:var(--surface-2);}
+  .size-t{font-size:14px;font-weight:500;}
+  .size-s{font-size:12px;color:var(--muted);margin-top:2px;}
+  .radio{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-strong);flex:0 0 auto;}
+  .radio.on{border-color:var(--ink);background:var(--ink);position:relative;}
+  .radio.on:after{content:"";position:absolute;inset:4.5px;border-radius:50%;background:#FFFFFF;}
+
+  .photo{
+    border:1.5px dashed var(--border-strong);border-radius:14px;
+    padding:22px 16px;text-align:center;
+  }
+  .photo-t{font-size:14px;font-weight:500;}
+  .photo-s{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45;}
+
+  .card{
+    border:1px solid var(--border);background:var(--surface);
+    border-radius:15px;padding:15px;display:flex;align-items:center;gap:12px;
+  }
+  .card + .card{margin-top:9px;}
+  .card-name{font-size:15px;font-weight:600;letter-spacing:-0.01em;}
+  .card-meta{font-size:12.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:7px;}
+  .dot{width:4px;height:4px;border-radius:50%;background:var(--dim);}
+  .open{color:var(--open);}
+  .closed{color:var(--dim);}
+  .card.dimmed{opacity:0.55;}
+  .chev{color:var(--dim);flex:0 0 auto;}
+
+  .btn{
+    width:100%;background:var(--ink);color:#FFFFFF;border-radius:14px;
+    padding:16px;text-align:center;font-size:15px;font-weight:600;letter-spacing:-0.01em;
+  }
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border-strong);font-weight:500;}
+  .btn.dead{background:var(--surface-2);color:var(--dim);}
+
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--border);border-radius:999px;
+    padding:8px 13px;font-size:12.5px;color:var(--muted);max-width:100%;
+  }
+  .pill b{color:var(--text);font-weight:500;}
+
+  .sumrow{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--border);}
+  .sumrow:last-child{border-bottom:none;}
+  .sumicon{width:26px;flex:0 0 auto;color:var(--dim);padding-top:1px;}
+  .sumlab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;}
+  .sumval{font-size:14px;margin-top:4px;line-height:1.45;}
+  .thumb{width:52px;height:52px;border-radius:9px;background:var(--surface-2);border:1px solid var(--border);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;}
+
+  .price{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 4px;}
+  .price-l{font-size:14px;color:var(--muted);}
+  .price-v{font-size:22px;font-weight:600;letter-spacing:-0.02em;}
+  .fine{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:10px;text-align:center;}
+
+  .gap-s{height:12px;} .gap-m{height:20px;} .gap-l{height:28px;} .gap-xl{height:38px;}
+  .topbar{height:34px;margin-bottom:18px;display:flex;align-items:center;flex:0 0 auto;}
+  .back{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);
+    background:var(--surface);display:flex;align-items:center;justify-content:center;
+    color:var(--muted);}
+
+  /* tracking + done */
+  .map{flex:0 0 292px;position:relative;background:#F1F1F4;overflow:hidden;}
+  .sheet{flex:1;background:var(--bg);border-top-left-radius:22px;border-top-right-radius:22px;
+    margin-top:-22px;position:relative;z-index:2;padding:20px 20px 0;
+    border-top:1px solid var(--border);display:flex;flex-direction:column;}
+  .grab{width:36px;height:4px;border-radius:2px;background:var(--border-strong);margin:0 auto 16px;}
+  .stat-t{font-size:19px;font-weight:600;letter-spacing:-0.025em;}
+  .stat-s{font-size:13px;color:var(--muted);margin-top:5px;}
+  .track{display:flex;gap:5px;margin:18px 0 16px;}
+  .seg{height:3px;flex:1;border-radius:2px;background:var(--surface-2);}
+  .seg.on{background:var(--ink);}
+  .crew{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--border);}
+  .av{width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--muted);flex:0 0 auto;}
+  .crew-n{font-size:14.5px;font-weight:600;}
+  .crew-s{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .dest{display:flex;align-items:center;gap:10px;padding:14px 0;border-top:1px solid var(--border);
+    font-size:13px;color:var(--muted);}
+  .dest b{color:var(--text);font-weight:500;}
+  .tick{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--open);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px;}
+  .rcpt{border:1px solid var(--border);background:var(--surface);border-radius:14px;padding:15px;}
+  .rl{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;}
+  .rl span:first-child{color:var(--muted);}
+  .note{display:flex;gap:10px;padding:14px 0 22px;border-top:1px solid var(--border);
+    font-size:12.5px;color:var(--muted);line-height:1.55;}
+  .wordmark{font-family:"Fraunces",Georgia,serif;font-variation-settings:"SOFT" 60,"WONK" 1,"opsz" 90;
+    font-weight:600;letter-spacing:-0.015em;}
+  .fontstrip{max-width:1400px;margin:0 auto 40px;display:flex;gap:14px;flex-wrap:wrap;}
+  .fs{border:1px solid var(--border);background:var(--bg);border-radius:14px;padding:18px 22px;min-width:220px;}
+  .fs-l{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:var(--dim);font-weight:600;margin-bottom:10px;}
+  .fs-w{font-size:27px;letter-spacing:-0.02em;}
+  .spacer{flex:1;}
+  svg{display:block;}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Send It Along — screen drafts</h1>
+  <p>Wordmark options up top, flow below. UI is set in Figtree; the wordmark is Fraunces.</p>
+</div>
+
+<div class="fontstrip" style="margin-bottom:34px;">
+  <div class="fs" style="min-width:auto;padding:16px 20px;">
+    <div class="fs-l">One blue · #2E7BC4</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <div style="width:58px;height:34px;border-radius:8px;background:#2E7BC4"></div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.55;">
+        Launch field, buttons, selected states, route line, pins.<br>
+        Type on the blue field is white — not a second blue.</div>
+    </div>
+  </div>
+</div>
+<div class="fontstrip">
+  <div class="fs"><div class="fs-l">Fraunces · in use</div><div class="fs-w wordmark">Send It Along</div></div>
+  <div class="fs"><div class="fs-l">Gabarito</div><div class="fs-w" style="font-family:Gabarito,sans-serif;font-weight:600;">Send It Along</div></div>
+  <div class="fs"><div class="fs-l">Bricolage Grotesque</div><div class="fs-w" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600;">Send It Along</div></div>
+  <div class="fs"><div class="fs-l">Figtree · UI font</div><div class="fs-w" style="font-weight:600;">Send It Along</div></div>
+</div>
+
+<div class="row">
+
+  <!-- ============ 0. LAUNCH ============ -->
+  <div class="slot">
+    <div class="slot-label">0 · Launch</div>
+    <div class="phone">
+      <div class="body" style="align-items:center;justify-content:center;text-align:center;background:var(--blue);margin:0 -20px;padding-left:20px;padding-right:20px;">
+        <div style="margin-top:-30px">
+          <div class="wordmark" style="font-size:42px;color:#FFFFFF;line-height:1.05;">Send It Along</div>
+          <div style="margin:26px 0 22px;display:flex;justify-content:center;"><svg width="150" height="150" style="margin:0 auto" viewBox="20 34 160 160" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#2B2118" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M100.00 92.00 L54.97 118.00 L37.65 102.00 L82.68 76.00 Z" fill="#EDBE85"/><path d="M100.00 92.00 L145.03 118.00 L162.35 102.00 L117.32 76.00 Z" fill="#EDBE85"/>
+    <path d="M100.00 92.00 L145.03 118.00 L100.00 144.00 L54.97 118.00 Z" fill="#C68B4C"/>
+    <path d="M54.97 118.00 L100.00 144.00 L100.00 178.00 L54.97 152.00 Z" fill="#DCA463"/><path d="M100.00 144.00 L145.03 118.00 L145.03 152.00 L100.00 178.00 Z" fill="#C68B4C"/>
+    <path d="M54.97 118.00 L100.00 144.00 L82.68 148.00 L37.65 122.00 Z" fill="#EDBE85"/><path d="M145.03 118.00 L100.00 144.00 L117.32 148.00 L162.35 122.00 Z" fill="#EDBE85"/>
+    <g transform="translate(100.0,84.0) scale(1.3)"><path d="M0 18 C-13 6 -20 -3 -20 -11 A11.5 11.5 0 0 1 0 -17 A11.5 11.5 0 0 1 20 -11 C20 -3 13 6 0 18 Z" fill="#E0785C" stroke="#2B2118" stroke-width="2.46" stroke-linejoin="round"/></g>
+  </g>
+</svg></div>
+          <div style="font-size:16.5px;color:rgba(255,255,255,0.85);letter-spacing:-0.005em;">Give without going anywhere</div>
+        </div>
+      </div>
+      <div style="height:3px;width:100%;background:var(--surface);flex:0 0 auto;">
+        <div style="height:3px;width:38%;background:var(--border-strong);"></div>
+      </div>
+    </div>
+    <div class="slot-note">Auto-dismisses in under a second, fades into the address screen. No tap. The hairline at the bottom only appears if boot runs long.</div>
+  </div>
+
+  <!-- ============ 1. LOCATION ============ -->
+  <div class="slot">
+    <div class="slot-label">1 · Pickup address</div>
+    <div class="phone">
+      <div class="body">
+        <div class="topbar"></div>
+        <h2 class="title">Where should we pick up?</h2>
+        <div class="gap-m"></div>
+        <div class="input active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C6C74" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>124 Har<span class="caret"></span></span>
+        </div>
+        <div class="sugg">
+          <div class="sugg-row">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6C6C74" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            <div><div class="sugg-main">Use my current location</div></div>
+          </div>
+          <div class="sugg-row">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9A9AA3" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/></svg>
+            <div><div class="sugg-main">124 Harrison Ave</div><div class="sugg-sub">Boston, MA 02111</div></div>
+          </div>
+          <div class="sugg-row">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9A9AA3" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/></svg>
+            <div><div class="sugg-main">124 Harrison St</div><div class="sugg-sub">Cambridge, MA 02139</div></div>
+          </div>
+          <div class="sugg-row">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9A9AA3" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/></svg>
+            <div><div class="sugg-main">124 Harvard St</div><div class="sugg-sub">Brookline, MA 02446</div></div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+    <div class="slot-note">Branding lives on the launch screen only. No Continue button — tapping a suggestion advances.</div>
+  </div>
+
+  <!-- ============ 2. ITEMS ============ -->
+  <div class="slot">
+    <div class="slot-label">2 · What you're giving</div>
+    <div class="phone">
+      <div class="body">
+        <div class="topbar"><div class="back"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></div></div>
+        <h2 class="title">What are you giving away?</h2>
+        <div class="gap-l"></div>
+
+        <div class="chips">
+          <span class="chip on">Clothing</span>
+          <span class="chip on">Books</span>
+          <span class="chip">Shoes</span>
+          <span class="chip">Kitchen</span>
+          <span class="chip">Toys</span>
+          <span class="chip">Linens</span>
+          <span class="chip">Electronics</span>
+          <span class="chip">Small furniture</span>
+        </div>
+        <div class="gap-l"></div>
+
+        <div class="seclabel">How much?</div>
+        <div class="sizes">
+          <div class="size"><div><div class="size-t">A bag or two</div></div><div class="radio"></div></div>
+          <div class="size on"><div><div class="size-t">A few bags</div><div class="size-s">Fits in a car back seat</div></div><div class="radio on"></div></div>
+          <div class="size"><div><div class="size-t">A carload</div></div><div class="radio"></div></div>
+        </div>
+        <div class="gap-l"></div>
+
+        <div class="seclabel">Add a photo</div>
+        <div class="photo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9A9AA3" stroke-width="1.8" style="margin:0 auto 9px"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="photo-t">Photo of the whole pile</div>
+          <div class="photo-s">Everything together, where you'll<br>leave it — so we know what to send.</div>
+        </div>
+        <div class="spacer"></div>
+      </div>
+      <div class="foot"><div class="btn">Continue</div></div>
+    </div>
+    <div class="slot-note">Button stays a plain Continue — no destination chosen yet, so Uber has nothing to quote. Disabled until a category and size are picked.</div>
+  </div>
+
+  <!-- ============ 3. SPOTS ============ -->
+  <div class="slot">
+    <div class="slot-label">3 · Where it goes</div>
+    <div class="phone">
+      <div class="body">
+        <div class="topbar"><div class="back"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></div></div>
+        <h2 class="title">Places that take these</h2>
+        <div class="sub">Near 124 Harrison Ave · clothing &amp; books</div>
+        <div class="gap-l"></div>
+
+        <div class="card">
+          <div style="flex:1">
+            <div class="card-name">Goodwill — South End</div>
+            <div class="card-meta"><span>1.2 mi</span><span class="dot"></span><span class="open">Open until 8pm</span></div>
+          </div>
+          <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="card">
+          <div style="flex:1">
+            <div class="card-name">Salvation Army</div>
+            <div class="card-meta"><span>2.8 mi</span><span class="dot"></span><span class="open">Open until 6pm</span></div>
+          </div>
+          <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="card dimmed">
+          <div style="flex:1">
+            <div class="card-name">Habitat ReStore</div>
+            <div class="card-meta"><span>4.1 mi</span><span class="dot"></span><span class="closed">Opens 9am tomorrow</span></div>
+          </div>
+          <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="spacer"></div>
+      </div>
+      <div class="foot"><div class="btn ghost">Pick the closest one for me</div></div>
+    </div>
+    <div class="slot-note">Tapping a card fires the quote. Price first appears on the next screen.</div>
+  </div>
+
+  <!-- ============ 4. CONFIRM ============ -->
+  <div class="slot">
+    <div class="slot-label">4 · Confirm</div>
+    <div class="phone">
+      <div class="body">
+        <div class="topbar"><div class="back"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></div></div>
+        <h2 class="title">Ready when you are</h2>
+        <div class="gap-l"></div>
+
+        <div class="sumrow">
+          <div class="sumicon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div style="flex:1"><div class="sumlab">Pickup</div><div class="sumval">124 Harrison Ave<br>Leave bags by the front door</div></div>
+        </div>
+
+        <div class="sumrow">
+          <div class="sumicon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+          <div style="flex:1"><div class="sumlab">Goes to</div><div class="sumval">Goodwill — South End<br><span style="color:var(--muted);font-size:13px">1.2 mi · open until 8pm</span></div></div>
+        </div>
+
+        <div class="sumrow">
+          <div class="sumicon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4L7.5 4.21M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg></div>
+          <div style="flex:1"><div class="sumlab">Giving</div><div class="sumval">Clothing, books · a few bags</div></div>
+          <div class="thumb">photo</div>
+        </div>
+
+        <div class="price">
+          <span class="price-l">Pickup &amp; delivery</span>
+          <span class="price-v">$14.00</span>
+        </div>
+
+        <div class="spacer"></div>
+      </div>
+      <div class="foot">
+        <div class="btn">Send it along · $14</div>
+      </div>
+    </div>
+    <div class="slot-note">Payment is embedded, not a separate page. Apple Pay sheet slides up from the OS, then straight to tracking. White button per Apple\u2019s dark-background guidance.</div>
+  </div>
+
+  <!-- ============ 5. TRACKING ============ -->
+  <div class="slot">
+    <div class="slot-label">5 · On its way</div>
+    <div class="phone">
+      <div style="flex:1;display:flex;flex-direction:column;">
+        <div class="map">
+          <svg width="340" height="292" viewBox="0 0 340 292" fill="none">
+            <g stroke="#E2E2E7" stroke-width="14">
+              <path d="M-10 70h360M-10 190h360M60 -10v312M235 -10v312"/>
+            </g>
+            <g stroke="#E9E9EE" stroke-width="6">
+              <path d="M-10 128h360M150 -10v312M300 -10v312"/>
+            </g>
+            <path d="M78 236 C120 236 120 150 152 150 C196 150 200 92 236 92" stroke="#2E7BC4" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 7"/>
+            <circle cx="236" cy="92" r="6" fill="#2E7BC4"/>
+            <circle cx="78" cy="236" r="9" fill="#FFFFFF" stroke="#2E7BC4" stroke-width="2.5"/>
+            <circle cx="152" cy="150" r="15" fill="#FFFFFF" stroke="#12924A" stroke-width="2"/>
+            <path d="M146 150l4 4 8-8" stroke="#12924A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="stat-t">Marcus is on the way</div>
+          <div class="stat-s">Arriving in about 6 minutes</div>
+          <div class="track">
+            <div class="seg on"></div><div class="seg on"></div><div class="seg"></div><div class="seg"></div>
+          </div>
+          <div class="crew">
+            <div class="sumicon" style="width:22px;color:var(--dim);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></div>
+            <div style="flex:1">
+              <div class="sumlab">Going to</div>
+              <div style="font-size:15px;font-weight:600;letter-spacing:-0.01em;margin-top:3px;">Goodwill — South End</div>
+              <div style="font-size:12.5px;color:var(--muted);margin-top:2px;">1.2 mi · open until 8pm</div>
+            </div>
+          </div>
+
+          <div class="crew">
+            <div class="thumb" style="width:42px;height:42px;font-size:9px;">photo</div>
+            <div style="flex:1">
+              <div class="sumlab">Your bags</div>
+              <div style="font-size:14px;margin-top:3px;">Clothing, books · a few bags</div>
+            </div>
+          </div>
+
+          <div class="crew">
+            <div class="av" style="width:34px;height:34px;font-size:13px;">M</div>
+            <div style="flex:1">
+              <div class="crew-n">Marcus</div>
+              <div class="crew-s">Your courier</div>
+            </div>
+            <div class="av" style="width:34px;height:34px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6C6C74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            </div>
+          </div>
+
+          <div class="note" style="padding-bottom:14px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9A9AA3" stroke-width="2" style="flex:0 0 auto;margin-top:1px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>Set your bags outside before Marcus arrives. You don't need to be there when he gets here.</span>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="slot-note">Destination and contents lead; the courier is a secondary row. No plate, no call button — you\u2019re not meeting a car.</div>
+  </div>
+
+  <!-- ============ 6. DONE ============ -->
+  <div class="slot">
+    <div class="slot-label">6 · Done</div>
+    <div class="phone">
+      <div class="body">
+        <div class="topbar"></div>
+        <div class="tick">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12924A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h2 class="title">Sent along</h2>
+        <div class="sub">Dropped off at 4:52pm today</div>
+        <div class="gap-l"></div>
+
+        <div class="rcpt">
+          <div class="rl"><span>Went to</span><span>Goodwill — South End</span></div>
+          <div class="rl"><span>Items</span><span>Clothing, books</span></div>
+          <div class="rl"><span>Amount</span><span>A few bags</span></div>
+          <div class="rl"><span>Paid</span><span>$14.00</span></div>
+        </div>
+        <div class="gap-m"></div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="thumb" style="width:60px;height:60px;">photo</div>
+          <div style="flex:1;font-size:12.5px;color:var(--muted);line-height:1.5;">
+Receipt saved on this device.<br>Yours to keep for your records.
+          </div>
+        </div>
+        <div class="spacer"></div>
+      </div>
+      <div class="foot">
+        <div class="btn ghost" style="margin-bottom:9px;">Email me a copy</div>
+        <div class="btn">Send something else</div>
+      </div>
+    </div>
+    <div class="slot-note">Fires on the dropoff webhook. The photo and timestamp are the substantiation record, not a valuation.</div>
+  </div>
+
+</div>
+</body>
+</html>
