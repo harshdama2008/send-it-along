@@ -3,32 +3,8 @@
 import { useRouter } from "next/navigation";
 import { Home, MapPin, Package } from "lucide-react";
 import { Header } from "@/components/header";
-import { useDonation, type DonationCategory, type DonationSize } from "@/lib/donation-store";
-
-const CATEGORY_LABELS: Record<DonationCategory, string> = {
-  clothing: "clothing",
-  books: "books",
-  shoes: "shoes",
-  kitchen: "kitchen",
-  toys: "toys",
-  linens: "linens",
-  electronics: "electronics",
-  "small-furniture": "small furniture",
-};
-
-const SIZE_LABELS: Record<DonationSize, string> = {
-  "bag-or-two": "a bag or two",
-  "few-bags": "a few bags",
-  carload: "a carload",
-};
-
-function formatGivingSummary(categories: DonationCategory[], size: DonationSize | null): string {
-  const categoryText = categories.map((category) => CATEGORY_LABELS[category]).join(", ");
-  const capitalized = categoryText.charAt(0).toUpperCase() + categoryText.slice(1);
-  const sizeText = size ? SIZE_LABELS[size] : null;
-  if (capitalized && sizeText) return `${capitalized} · ${sizeText}`;
-  return capitalized || sizeText || "";
-}
+import { useDonation } from "@/lib/donation-store";
+import { formatGivingSummary } from "@/lib/donation-format";
 
 export default function ConfirmPage() {
   const router = useRouter();
