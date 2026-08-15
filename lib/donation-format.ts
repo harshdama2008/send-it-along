@@ -16,12 +16,16 @@ export const SIZE_LABELS: Record<DonationSize, string> = {
   carload: "a carload",
 };
 
+export function formatCategoryPhrase(categories: DonationCategory[]): string {
+  const categoryText = categories.map((category) => CATEGORY_LABELS[category]).join(", ");
+  return categoryText.charAt(0).toUpperCase() + categoryText.slice(1);
+}
+
 export function formatGivingSummary(
   categories: DonationCategory[],
   size: DonationSize | null,
 ): string {
-  const categoryText = categories.map((category) => CATEGORY_LABELS[category]).join(", ");
-  const capitalized = categoryText.charAt(0).toUpperCase() + categoryText.slice(1);
+  const capitalized = formatCategoryPhrase(categories);
   const sizeText = size ? SIZE_LABELS[size] : null;
   if (capitalized && sizeText) return `${capitalized} · ${sizeText}`;
   return capitalized || sizeText || "";
