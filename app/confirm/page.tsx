@@ -2,9 +2,9 @@ import { Header } from "@/components/header";
 
 export default function ConfirmPage() {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col overflow-hidden">
       <Header back="/places" />
-      <div className="flex-1 px-5">
+      <div className="flex-1 overflow-y-auto px-5 pb-[calc(24px+env(safe-area-inset-bottom))]">
         <h1 className="text-[22px] font-semibold text-ink">
           Ready when you are
         </h1>

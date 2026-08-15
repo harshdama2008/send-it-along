@@ -27,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-dvh bg-surface">
         <DonationProvider>
-          <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-bg pb-[env(safe-area-inset-bottom)] sm:border-x sm:border-border sm:shadow-sm">
+          <div className="mx-auto flex h-dvh w-full max-w-[480px] flex-col overflow-hidden bg-bg sm:border-x sm:border-border sm:shadow-sm">
             {children}
           </div>
         </DonationProvider>
