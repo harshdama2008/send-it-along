@@ -1,15 +1,16 @@
 import { Header } from "@/components/header";
 
-export default function PickupAddressPage() {
+export default function ConfirmPage() {
   return (
     <div className="flex flex-1 flex-col">
-      <Header />
+      <Header back="/places" />
       <div className="flex-1 px-5">
         <h1 className="text-[22px] font-semibold text-ink">
-          Where should we pick up?
+          Ready when you are
         </h1>
         <p className="mt-4 text-sm text-muted">
-          Address autocomplete and the current-location row will go here.
+          Pickup, destination, and giving summary rows, plus the price and
+          &ldquo;Send it along&rdquo; button, will go here.
         </p>
       </div>
     </div>

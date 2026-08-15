@@ -1,15 +1,16 @@
 import { Header } from "@/components/header";
 
-export default function PickupAddressPage() {
+export default function ItemsPage() {
   return (
     <div className="flex flex-1 flex-col">
-      <Header />
+      <Header back="/" />
       <div className="flex-1 px-5">
         <h1 className="text-[22px] font-semibold text-ink">
-          Where should we pick up?
+          What are you giving away?
         </h1>
         <p className="mt-4 text-sm text-muted">
-          Address autocomplete and the current-location row will go here.
+          Category chips, the size selector, and the required photo will go
+          here.
         </p>
       </div>
     </div>

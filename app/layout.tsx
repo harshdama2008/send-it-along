@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Figtree, Fraunces } from "next/font/google";
+import { DonationProvider } from "@/lib/donation-store";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -24,7 +25,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${fraunces.variable} ${figtree.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-dvh bg-surface">
+        <DonationProvider>
+          <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-bg pb-[env(safe-area-inset-bottom)] sm:border-x sm:border-border sm:shadow-sm">
+            {children}
+          </div>
+        </DonationProvider>
+      </body>
     </html>
   );
 }
