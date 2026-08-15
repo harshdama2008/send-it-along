@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+const DONATION_ID_STORAGE_KEY = "send-it-along:donation-id";
 
 export type DonationCategory =
   | "clothing_shoes"
@@ -32,6 +34,7 @@ export type SelectedCharity = {
 };
 
 export type DonationState = {
+  donationId: string | null;
   address: string | null;
   coordinates: Coordinates | null;
   categories: DonationCategory[];
@@ -42,6 +45,7 @@ export type DonationState = {
 };
 
 const initialState: DonationState = {
+  donationId: null,
   address: null,
   coordinates: null,
   categories: [],
@@ -59,6 +63,7 @@ type DonationContextValue = {
   setPhoto: (photo: DonationPhoto | null) => void;
   setCharity: (charity: SelectedCharity | null) => void;
   setPriceCents: (priceCents: number | null) => void;
+  setDonationId: (donationId: string | null) => void;
   reset: () => void;
 };
 
@@ -66,6 +71,13 @@ const DonationContext = createContext<DonationContextValue | null>(null);
 
 export function DonationProvider({ children }: { children: ReactNode }) {
   const [donation, setDonation] = useState<DonationState>(initialState);
+
+  // The donation id is the one piece of this store that survives a reload —
+  // it identifies a real server-side row, not just in-progress form state.
+  useEffect(() => {
+    const storedId = window.localStorage.getItem(DONATION_ID_STORAGE_KEY);
+    if (storedId) setDonation((prev) => ({ ...prev, donationId: storedId }));
+  }, []);
 
   const value = useMemo<DonationContextValue>(
     () => ({
@@ -87,9 +99,15 @@ export function DonationProvider({ children }: { children: ReactNode }) {
         }),
       setCharity: (charity) => setDonation((prev) => ({ ...prev, charity })),
       setPriceCents: (priceCents) => setDonation((prev) => ({ ...prev, priceCents })),
+      setDonationId: (donationId) => {
+        if (donationId) window.localStorage.setItem(DONATION_ID_STORAGE_KEY, donationId);
+        else window.localStorage.removeItem(DONATION_ID_STORAGE_KEY);
+        setDonation((prev) => ({ ...prev, donationId }));
+      },
       reset: () =>
         setDonation((prev) => {
           if (prev.photo) URL.revokeObjectURL(prev.photo.previewUrl);
+          window.localStorage.removeItem(DONATION_ID_STORAGE_KEY);
           return initialState;
         }),
     }),

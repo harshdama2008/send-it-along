@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Camera } from "lucide-react";
 import { Header } from "@/components/header";
 import { useDonation, type DonationCategory, type DonationSize } from "@/lib/donation-store";
+import { supabaseBrowser } from "@/lib/supabase/browser";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_OPTIONS: { value: DonationCategory; label: string }[] = [
@@ -25,7 +26,9 @@ const SIZE_OPTIONS: { value: DonationSize; label: string; sub?: string }[] = [
 
 export default function ItemsPage() {
   const router = useRouter();
-  const { donation, toggleCategory, setSize, setPhoto } = useDonation();
+  const { donation, toggleCategory, setSize, setPhoto, setDonationId } = useDonation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const canContinue = donation.categories.length > 0 && donation.size !== null;
 
@@ -33,6 +36,62 @@ export default function ItemsPage() {
     const file = event.target.files?.[0];
     if (!file) return;
     setPhoto({ file, previewUrl: URL.createObjectURL(file) });
+  }
+
+  async function uploadPhoto(): Promise<string | null> {
+    if (!donation.photo) return null;
+
+    // 1. Ask the server to mint a presigned upload URL — it's the only
+    // party with the service role key needed to talk to Storage directly.
+    const presignRes = await fetch("/api/uploads/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName: donation.photo.file.name }),
+    });
+    if (!presignRes.ok) throw new Error("Could not get an upload URL");
+    const { path, token, bucket, publicUrl } = await presignRes.json();
+
+    // 2. Upload the file straight from the browser to Storage using that
+    // URL — the bytes never pass through our own server.
+    const { error: uploadError } = await supabaseBrowser.storage
+      .from(bucket)
+      .uploadToSignedUrl(path, token, donation.photo.file);
+    if (uploadError) throw uploadError;
+
+    return publicUrl as string;
+  }
+
+  async function handleContinue() {
+    if (!canContinue || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const photoUrl = await uploadPhoto();
+
+      // 3. Create the donation row now that we know the final photo URL.
+      const donationRes = await fetch("/api/donations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pickup_address: donation.address,
+          pickup_lat: donation.coordinates?.lat ?? null,
+          pickup_lng: donation.coordinates?.lng ?? null,
+          categories: donation.categories,
+          size: donation.size,
+          photo_url: photoUrl,
+        }),
+      });
+      if (!donationRes.ok) throw new Error("Could not save your donation");
+      const { id } = await donationRes.json();
+
+      // 4. Remember which donation this is, in the store and across reloads.
+      setDonationId(id);
+      router.push("/places");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Something went wrong");
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -137,16 +196,19 @@ export default function ItemsPage() {
       </div>
 
       <div className="flex-none border-t border-border bg-bg px-5 pb-[calc(18px+env(safe-area-inset-bottom))] pt-[18px]">
+        {submitError ? (
+          <div className="mb-2.5 text-center text-xs text-destructive">{submitError}</div>
+        ) : null}
         <button
           type="button"
-          disabled={!canContinue}
-          onClick={() => router.push("/places")}
+          disabled={!canContinue || isSubmitting}
+          onClick={handleContinue}
           className={cn(
             "w-full rounded-[14px] py-4 text-[15px] font-semibold tracking-[-0.01em]",
             canContinue ? "bg-brand text-white" : "bg-surface-2 text-dim",
           )}
         >
-          Continue
+          {isSubmitting ? "Saving…" : "Continue"}
         </button>
       </div>
     </div>

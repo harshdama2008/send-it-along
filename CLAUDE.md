@@ -358,16 +358,17 @@ Supabase realtime.
 ## 9. API routes
 
 ```
-POST /api/places/search      address autocomplete proxy
-POST /api/charities          coords + categories → 3 matches (cache-first)
-POST /api/donations          create draft record
-POST /api/quote              donation + charity → price, quote id
-POST /api/payment-intent     create PaymentIntent (skipped in demo)
-POST /api/dispatch           create Uber delivery
-POST /api/webhooks/uber      idempotent status handler
-POST /api/webhooks/stripe    payment confirmation
-GET  /api/donations/:id      current state (polled by tracking)
-GET  /r/:id                  receipt page
+POST /api/places/search       address autocomplete proxy
+POST /api/charities           coords + categories → 3 matches (cache-first)
+POST /api/donations           create draft record
+POST /api/uploads/presign     presigned Supabase Storage upload URL for a donation photo
+POST /api/quote               donation + charity → price, quote id
+POST /api/payment-intent      create PaymentIntent (skipped in demo)
+POST /api/dispatch            create Uber delivery
+POST /api/webhooks/uber       idempotent status handler
+POST /api/webhooks/stripe     payment confirmation
+GET  /api/donations/:id       current state (polled by tracking)
+GET  /r/:id                   receipt page
 ```
 
 ---
