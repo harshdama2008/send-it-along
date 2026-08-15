@@ -77,8 +77,8 @@ Set manifest `theme_color` to `#2E7BC4`.
 
 ### 2 · What you're giving
 - Title: "What are you giving away?"
-- **Categories** — multi-select chips: clothing, books, shoes, kitchen, toys, linens,
-  electronics, small furniture.
+- **Categories** — multi-select chips: Clothing & shoes, Books, Utensils, Bedding & towels,
+  Toys, Electronics, Small furniture.
 - **Size** — single select: `A bag or two` / `A few bags` (sub: "Fits in a car back seat") /
   `A carload`. Maps to the Uber manifest size.
 - **Photo** — required, one. Copy: "Photo of the whole pile / Everything together, where
@@ -190,12 +190,12 @@ These are approximations. When hours come from the fallback rather than OSM, sho
 OSM won't tell you. Override table keyed on name/brand:
 
 ```
-Goodwill              → clothing, books, shoes, kitchen, toys, linens, electronics
-Salvation Army        → clothing, books, shoes, kitchen, toys, linens, small furniture
-Habitat ReStore       → small furniture, kitchen, electronics
-Vietnam Veterans      → clothing, shoes, linens, books
-Savers                → clothing, books, shoes, kitchen, toys, linens
-(default)             → clothing, books, shoes, linens
+Goodwill              → clothing_shoes, books, utensils, bedding, toys, electronics
+Salvation Army        → clothing_shoes, books, utensils, bedding, toys, small_furniture
+Habitat ReStore       → utensils, electronics, small_furniture
+Vietnam Veterans      → clothing_shoes, books, bedding
+Savers                → clothing_shoes, books, utensils, bedding, toys
+(default)             → clothing_shoes, books, bedding
 ```
 
 ### Matching algorithm

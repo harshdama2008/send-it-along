@@ -1,14 +1,13 @@
 import type { DonationCategory, DonationSize } from "@/lib/donation-store";
 
 export const CATEGORY_LABELS: Record<DonationCategory, string> = {
-  clothing: "clothing",
+  clothing_shoes: "clothing & shoes",
   books: "books",
-  shoes: "shoes",
-  kitchen: "kitchen",
+  utensils: "utensils",
+  bedding: "bedding & towels",
   toys: "toys",
-  linens: "linens",
   electronics: "electronics",
-  "small-furniture": "small furniture",
+  small_furniture: "small furniture",
 };
 
 export const SIZE_LABELS: Record<DonationSize, string> = {
@@ -26,4 +25,11 @@ export function formatGivingSummary(
   const sizeText = size ? SIZE_LABELS[size] : null;
   if (capitalized && sizeText) return `${capitalized} · ${sizeText}`;
   return capitalized || sizeText || "";
+}
+
+export function formatCategoryList(categories: DonationCategory[]): string {
+  const labels = categories.map((category) => CATEGORY_LABELS[category]);
+  if (labels.length === 0) return "";
+  if (labels.length === 1) return labels[0];
+  return `${labels.slice(0, -1).join(", ")} & ${labels[labels.length - 1]}`;
 }

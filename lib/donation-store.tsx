@@ -3,14 +3,13 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 
 export type DonationCategory =
-  | "clothing"
+  | "clothing_shoes"
   | "books"
-  | "shoes"
-  | "kitchen"
+  | "utensils"
+  | "bedding"
   | "toys"
-  | "linens"
   | "electronics"
-  | "small-furniture";
+  | "small_furniture";
 
 export type DonationSize = "bag-or-two" | "few-bags" | "carload";
 

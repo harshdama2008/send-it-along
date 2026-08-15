@@ -8,14 +8,13 @@ import { useDonation, type DonationCategory, type DonationSize } from "@/lib/don
 import { cn } from "@/lib/utils";
 
 const CATEGORY_OPTIONS: { value: DonationCategory; label: string }[] = [
-  { value: "clothing", label: "Clothing" },
+  { value: "clothing_shoes", label: "Clothing & shoes" },
   { value: "books", label: "Books" },
-  { value: "shoes", label: "Shoes" },
-  { value: "kitchen", label: "Kitchen" },
+  { value: "utensils", label: "Utensils" },
+  { value: "bedding", label: "Bedding & towels" },
   { value: "toys", label: "Toys" },
-  { value: "linens", label: "Linens" },
   { value: "electronics", label: "Electronics" },
-  { value: "small-furniture", label: "Small furniture" },
+  { value: "small_furniture", label: "Small furniture" },
 ];
 
 const SIZE_OPTIONS: { value: DonationSize; label: string; sub?: string }[] = [

@@ -3,26 +3,9 @@
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { Header } from "@/components/header";
-import { useDonation, type DonationCategory, type SelectedCharity } from "@/lib/donation-store";
+import { useDonation, type SelectedCharity } from "@/lib/donation-store";
+import { formatCategoryList } from "@/lib/donation-format";
 import { cn } from "@/lib/utils";
-
-const CATEGORY_LABELS: Record<DonationCategory, string> = {
-  clothing: "clothing",
-  books: "books",
-  shoes: "shoes",
-  kitchen: "kitchen",
-  toys: "toys",
-  linens: "linens",
-  electronics: "electronics",
-  "small-furniture": "small furniture",
-};
-
-function formatCategoryList(categories: DonationCategory[]): string {
-  const labels = categories.map((category) => CATEGORY_LABELS[category]);
-  if (labels.length === 0) return "";
-  if (labels.length === 1) return labels[0];
-  return `${labels.slice(0, -1).join(", ")} & ${labels[labels.length - 1]}`;
-}
 
 type FakeCharity = SelectedCharity & { open: boolean };
 
