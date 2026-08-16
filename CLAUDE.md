@@ -358,7 +358,7 @@ Supabase realtime.
 ## 9. API routes
 
 ```
-POST /api/places/search       address autocomplete proxy
+POST /api/places/autocomplete address autocomplete proxy
 POST /api/charities           coords + categories → 3 matches (cache-first)
 POST /api/donations           create draft record
 POST /api/uploads/presign     presigned Supabase Storage upload URL for a donation photo
