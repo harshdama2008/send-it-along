@@ -6,4 +6,5 @@ export type AddressSuggestion = {
 
 // The contract every provider (Geoapify, Photon, ...) must satisfy, so the
 // route handler and callers never need to know which one is active.
-export type AddressAutocompleteProvider = (query: string) => Promise<AddressSuggestion[]>;
+export type SearchAddresses = (query: string) => Promise<AddressSuggestion[]>;
+export type ReverseGeocode = (lat: number, lng: number) => Promise<AddressSuggestion | null>;
