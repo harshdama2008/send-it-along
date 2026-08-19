@@ -42,6 +42,11 @@ export type DonationState = {
   photo: DonationPhoto | null;
   charity: SelectedCharity | null;
   priceCents: number | null;
+  // The /places screen fires /api/quote and navigates to /confirm without
+  // waiting for it, so /confirm needs to know the quote is still in flight
+  // to show a skeleton instead of a stale or missing price.
+  isQuoting: boolean;
+  quoteError: string | null;
 };
 
 const initialState: DonationState = {
@@ -53,6 +58,8 @@ const initialState: DonationState = {
   photo: null,
   charity: null,
   priceCents: null,
+  isQuoting: false,
+  quoteError: null,
 };
 
 type DonationContextValue = {
@@ -64,6 +71,8 @@ type DonationContextValue = {
   setCharity: (charity: SelectedCharity | null) => void;
   setPriceCents: (priceCents: number | null) => void;
   setDonationId: (donationId: string | null) => void;
+  startQuote: () => void;
+  setQuoteError: (error: string) => void;
   reset: () => void;
 };
 
@@ -98,7 +107,12 @@ export function DonationProvider({ children }: { children: ReactNode }) {
           return { ...prev, photo };
         }),
       setCharity: (charity) => setDonation((prev) => ({ ...prev, charity })),
-      setPriceCents: (priceCents) => setDonation((prev) => ({ ...prev, priceCents })),
+      setPriceCents: (priceCents) =>
+        setDonation((prev) => ({ ...prev, priceCents, isQuoting: false, quoteError: null })),
+      startQuote: () =>
+        setDonation((prev) => ({ ...prev, priceCents: null, isQuoting: true, quoteError: null })),
+      setQuoteError: (quoteError) =>
+        setDonation((prev) => ({ ...prev, quoteError, isQuoting: false })),
       setDonationId: (donationId) => {
         if (donationId) window.localStorage.setItem(DONATION_ID_STORAGE_KEY, donationId);
         else window.localStorage.removeItem(DONATION_ID_STORAGE_KEY);

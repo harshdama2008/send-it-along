@@ -1,16 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Home, MapPin, Package } from "lucide-react";
 import { Header } from "@/components/header";
 import { useDonation } from "@/lib/donation-store";
-import { formatGivingSummary } from "@/lib/donation-format";
+import { formatGivingSummary, formatPriceCents } from "@/lib/donation-format";
 
 export default function ConfirmPage() {
   const router = useRouter();
   const { donation } = useDonation();
+  const [isDispatching, setIsDispatching] = useState(false);
+  const [dispatchError, setDispatchError] = useState<string | null>(null);
 
   const givingSummary = formatGivingSummary(donation.categories, donation.size);
+
+  async function handleSendItAlong() {
+    if (isDispatching || !donation.donationId) return;
+
+    setIsDispatching(true);
+    setDispatchError(null);
+
+    try {
+      // Demo mode skips payment entirely and calls dispatch directly
+      // (CLAUDE.md section 11). When Stripe lands in Part K, the payment
+      // sheet opens here and only calls /api/dispatch after its webhook
+      // confirms — "never dispatch before payment resolves" (section 1).
+      const res = await fetch("/api/dispatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ donationId: donation.donationId }),
+      });
+      if (!res.ok) throw new Error("Could not send it along");
+
+      router.push("/track");
+    } catch (error) {
+      setDispatchError(error instanceof Error ? error.message : "Could not send it along");
+      setIsDispatching(false);
+    }
+  }
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -85,17 +113,35 @@ export default function ConfirmPage() {
 
         <div className="flex items-baseline justify-between pt-[14px] pb-1">
           <span className="text-sm text-muted">Pickup &amp; delivery</span>
-          <span className="text-[22px] font-semibold tracking-[-0.02em] text-ink">$14.00</span>
+          {donation.isQuoting ? (
+            <span className="h-[22px] w-16 animate-pulse rounded-md bg-surface-2" />
+          ) : donation.quoteError ? (
+            <span className="text-sm text-destructive">{donation.quoteError}</span>
+          ) : donation.priceCents != null ? (
+            <span className="text-[22px] font-semibold tracking-[-0.02em] text-ink">
+              {formatPriceCents(donation.priceCents)}
+            </span>
+          ) : (
+            <span className="h-[22px] w-16 animate-pulse rounded-md bg-surface-2" />
+          )}
         </div>
       </div>
 
       <div className="flex-none border-t border-border bg-bg px-5 pb-[calc(18px+env(safe-area-inset-bottom))] pt-[18px]">
+        {dispatchError ? (
+          <div className="mb-2.5 text-center text-xs text-destructive">{dispatchError}</div>
+        ) : null}
         <button
           type="button"
-          onClick={() => router.push("/track")}
-          className="w-full rounded-[14px] bg-brand py-4 text-[15px] font-semibold tracking-[-0.01em] text-white"
+          disabled={donation.isQuoting || isDispatching}
+          onClick={handleSendItAlong}
+          className="w-full rounded-[14px] bg-brand py-4 text-[15px] font-semibold tracking-[-0.01em] text-white disabled:opacity-60"
         >
-          Send it along · $14
+          {isDispatching
+            ? "Sending…"
+            : donation.priceCents != null
+              ? `Send it along · ${formatPriceCents(donation.priceCents)}`
+              : "Send it along"}
         </button>
       </div>
     </div>

@@ -31,6 +31,10 @@ export function formatGivingSummary(
   return capitalized || sizeText || "";
 }
 
+export function formatPriceCents(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
 export function formatCategoryList(categories: DonationCategory[]): string {
   const labels = categories.map((category) => CATEGORY_LABELS[category]);
   if (labels.length === 0) return "";

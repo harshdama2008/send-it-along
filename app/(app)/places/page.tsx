@@ -20,7 +20,7 @@ type CharityResult = {
 
 export default function PlacesPage() {
   const router = useRouter();
-  const { donation, setCharity } = useDonation();
+  const { donation, setCharity, startQuote, setPriceCents, setQuoteError } = useDonation();
 
   const [charities, setCharities] = useState<CharityResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,6 +71,32 @@ export default function PlacesPage() {
       distanceMiles: charity.distanceMiles,
       closingTime: charity.hoursText,
     });
+
+    // Fire the quote and move on immediately — /confirm shows a skeleton
+    // for the price rather than making the user wait here for it.
+    startQuote();
+    if (donation.donationId) {
+      fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          donationId: donation.donationId,
+          charity: { placeId: charity.placeId, name: charity.name, address: charity.address },
+        }),
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error("Could not get a price");
+          const data = (await res.json()) as { priceCents?: number };
+          if (typeof data.priceCents !== "number") throw new Error("Could not get a price");
+          setPriceCents(data.priceCents);
+        })
+        .catch((err: unknown) => {
+          setQuoteError(err instanceof Error ? err.message : "Could not get a price");
+        });
+    } else {
+      setQuoteError("Missing donation");
+    }
+
     router.push("/confirm");
   }
 
