@@ -58,25 +58,34 @@ function verifySignature(rawBody: string, signatureHeader: string | null, signin
   return expected.length === provided.length && timingSafeEqual(expected, provided);
 }
 
+// Lets scripts/replay-uber-webhook.mjs (and other local testing) post
+// unsigned payloads straight to this route. Gated on NODE_ENV as well as
+// the flag itself so a stray env var can never disable verification in a
+// deployed environment.
+const skipSignatureCheck =
+  process.env.NODE_ENV !== "production" && process.env.UBER_WEBHOOK_SKIP_SIGNATURE_CHECK === "1";
+
 export async function POST(request: Request) {
   // Uber signs the raw request bytes — read as text before anything parses
   // it as JSON, or the signature check below will never match a
   // re-serialized body (CLAUDE.md section 5, "Webhooks").
   const rawBody = await request.text();
 
-  const signingKey = process.env.UBER_WEBHOOK_SIGNING_KEY;
-  if (!signingKey) {
-    console.error("[/api/webhooks/uber] UBER_WEBHOOK_SIGNING_KEY is not set");
-    return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
-  }
+  if (!skipSignatureCheck) {
+    const signingKey = process.env.UBER_WEBHOOK_SIGNING_KEY;
+    if (!signingKey) {
+      console.error("[/api/webhooks/uber] UBER_WEBHOOK_SIGNING_KEY is not set");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
 
-  // Uber sends either header for delivery status events.
-  const signatureHeader =
-    request.headers.get("x-uber-signature") ?? request.headers.get("x-postmates-signature");
+    // Uber sends either header for delivery status events.
+    const signatureHeader =
+      request.headers.get("x-uber-signature") ?? request.headers.get("x-postmates-signature");
 
-  if (!verifySignature(rawBody, signatureHeader, signingKey)) {
-    console.error("[/api/webhooks/uber] signature verification failed");
-    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    if (!verifySignature(rawBody, signatureHeader, signingKey)) {
+      console.error("[/api/webhooks/uber] signature verification failed");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
   }
 
   let payload: UberWebhookPayload;
