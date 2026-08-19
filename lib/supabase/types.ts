@@ -72,6 +72,7 @@ export type Database = {
           uber_delivery_id: string | null;
           tracking_url: string | null;
           courier_name: string | null;
+          courier_imminent: boolean | null;
           payment_intent_id: string | null;
           is_demo: boolean;
           created_at: string;
@@ -103,6 +104,7 @@ export type Database = {
           uber_delivery_id?: string | null;
           tracking_url?: string | null;
           courier_name?: string | null;
+          courier_imminent?: boolean | null;
           payment_intent_id?: string | null;
           is_demo?: boolean;
           created_at?: string;
@@ -134,6 +136,7 @@ export type Database = {
           uber_delivery_id?: string | null;
           tracking_url?: string | null;
           courier_name?: string | null;
+          courier_imminent?: boolean | null;
           payment_intent_id?: string | null;
           is_demo?: boolean;
           created_at?: string;

@@ -64,6 +64,9 @@ create table donations (
   uber_delivery_id     text,
   tracking_url         text,
   courier_name         text,
+  -- ~1 minute from arrival, from the `pickup`/`dropoff` webhook payload —
+  -- drives the "Almost there" copy on the tracking screen.
+  courier_imminent     boolean,
 
   payment_intent_id    text,
   is_demo              boolean not null default false,
