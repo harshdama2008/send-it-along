@@ -132,19 +132,27 @@ export async function POST(request: Request) {
   }
 
   // Webhooks are duplicated and arrive out of order (CLAUDE.md section 5).
-  // Only ever move status forward: compare positions in STATUS_ORDER rather
-  // than trusting arrival order, so a late-arriving earlier event can never
-  // regress a donation that has already advanced further.
+  // Compare positions in STATUS_ORDER rather than trusting arrival order:
+  // an event strictly earlier than the donation's current status
+  // (nextIndex < currentIndex) is a stale, out-of-order delivery and is
+  // dropped outright — `status` itself must never go backwards. An event
+  // for the SAME mapped status (nextIndex === currentIndex) is not a
+  // regression, so it still updates courier_name/courier_imminent below —
+  // those fields change mid-status (courier_imminent flips true on a
+  // repeated `pickup` webhook well before the status advances to
+  // `picked_up`) — it just skips rewriting `status`/its timestamp again.
   const currentIndex = STATUS_ORDER.indexOf(donation.status as UberMappedStatus);
   const nextIndex = STATUS_ORDER.indexOf(mappedStatus);
-  if (nextIndex <= currentIndex) {
+  if (nextIndex < currentIndex) {
     return NextResponse.json({ received: true });
   }
 
-  const update: TablesUpdate<"donations"> = {
-    status: mappedStatus,
-    [STATUS_TIMESTAMP_COLUMN[mappedStatus]]: new Date().toISOString(),
-  };
+  const update: TablesUpdate<"donations"> = {};
+
+  if (nextIndex > currentIndex) {
+    update.status = mappedStatus;
+    update[STATUS_TIMESTAMP_COLUMN[mappedStatus]] = new Date().toISOString();
+  }
 
   // Courier name is absent from the `delivered` webhook — save it the
   // first time it shows up and leave it alone after that.
@@ -159,13 +167,15 @@ export async function POST(request: Request) {
     update.courier_imminent = courierImminent;
   }
 
-  const { error: updateError } = await supabaseAdmin
-    .from("donations")
-    .update(update)
-    .eq("uber_delivery_id", deliveryId);
+  if (Object.keys(update).length > 0) {
+    const { error: updateError } = await supabaseAdmin
+      .from("donations")
+      .update(update)
+      .eq("uber_delivery_id", deliveryId);
 
-  if (updateError) {
-    console.error("[/api/webhooks/uber] failed to update donation:", updateError.message);
+    if (updateError) {
+      console.error("[/api/webhooks/uber] failed to update donation:", updateError.message);
+    }
   }
 
   // Return 200 fast — Uber retries on 5xx/timeout after 10s, 30s, 60s,
