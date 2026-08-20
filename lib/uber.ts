@@ -176,6 +176,12 @@ export async function createDelivery(params: CreateDeliveryParams): Promise<Uber
         size: item.size ?? "medium",
       })),
       manifest_total_value: params.manifestTotalValueCents ?? PLACEHOLDER_MANIFEST_VALUE_CENTS,
+      // Nobody's home for a donation pickup — default is
+      // deliverable_action_meet_at_door, which tells the courier the
+      // recipient must be present. There's no pickup-side equivalent in
+      // Uber's Create Delivery API; deliverable_action only governs
+      // dropoff behavior.
+      deliverable_action: "deliverable_action_leave_at_door",
       dropoff_verification: { picture: true },
       test_specifications: {
         robo_courier_specification: { mode: "auto" },
