@@ -57,6 +57,8 @@ create table donations (
   charity_place_id     text,
   charity_name         text,
   charity_address      text,
+  charity_lat          double precision,
+  charity_lng          double precision,
 
   quote_id             text,
   quote_amount_cents   integer,

@@ -67,6 +67,8 @@ export type Database = {
           charity_place_id: string | null;
           charity_name: string | null;
           charity_address: string | null;
+          charity_lat: number | null;
+          charity_lng: number | null;
           quote_id: string | null;
           quote_amount_cents: number | null;
           uber_delivery_id: string | null;
@@ -99,6 +101,8 @@ export type Database = {
           charity_place_id?: string | null;
           charity_name?: string | null;
           charity_address?: string | null;
+          charity_lat?: number | null;
+          charity_lng?: number | null;
           quote_id?: string | null;
           quote_amount_cents?: number | null;
           uber_delivery_id?: string | null;
@@ -131,6 +135,8 @@ export type Database = {
           charity_place_id?: string | null;
           charity_name?: string | null;
           charity_address?: string | null;
+          charity_lat?: number | null;
+          charity_lng?: number | null;
           quote_id?: string | null;
           quote_amount_cents?: number | null;
           uber_delivery_id?: string | null;

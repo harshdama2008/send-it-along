@@ -5,6 +5,7 @@ import { Home, Info, MapPin, MessageCircle } from "lucide-react";
 import { useDonation } from "@/lib/donation-store";
 import { formatGivingSummary } from "@/lib/donation-format";
 import { cn } from "@/lib/utils";
+import { TrackingMap } from "@/components/tracking-map";
 
 const POLL_INTERVAL_MS = 2000;
 
@@ -25,6 +26,10 @@ type DonationRow = {
   status: TrackStatus;
   courier_name: string | null;
   courier_imminent: boolean | null;
+  pickup_lat: number | null;
+  pickup_lng: number | null;
+  charity_lat: number | null;
+  charity_lng: number | null;
 };
 
 type TrackStep = {
@@ -64,6 +69,7 @@ export default function TrackPage() {
   const { donation } = useDonation();
   const donationId = donation.donationId;
   const [row, setRow] = useState<DonationRow | null>(null);
+  const [mapFailed, setMapFailed] = useState(false);
 
   useEffect(() => {
     if (!donationId) return;
@@ -99,36 +105,53 @@ export default function TrackPage() {
   const courierName = row?.courier_name ?? null;
   const givingSummary = formatGivingSummary(donation.categories, donation.size);
 
+  const hasMapCoordinates =
+    typeof row?.pickup_lat === "number" &&
+    typeof row?.pickup_lng === "number" &&
+    typeof row?.charity_lat === "number" &&
+    typeof row?.charity_lng === "number";
+  const showMap = hasMapCoordinates && !mapFailed;
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* No header on this screen — the map runs to the top edge. */}
       <div className="relative h-[290px] flex-none overflow-hidden bg-surface">
-        <svg
-          className="absolute inset-0 h-full w-full"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M22 76 Q40 76 46 50 Q52 22 76 22"
-            fill="none"
-            stroke="#2E7BC4"
-            strokeWidth="0.6"
-            strokeDasharray="1.4 3"
-            strokeLinecap="round"
+        {showMap && row ? (
+          <TrackingMap
+            pickup={{ lat: row.pickup_lat as number, lng: row.pickup_lng as number }}
+            dropoff={{ lat: row.charity_lat as number, lng: row.charity_lng as number }}
+            onTilesUnavailable={() => setMapFailed(true)}
           />
-        </svg>
-        <MapPin
-          className="absolute h-7 w-7 -translate-x-1/2 -translate-y-full text-brand"
-          style={{ left: "22%", top: "76%" }}
-          fill="white"
-          strokeWidth={2}
-        />
-        <MapPin
-          className="absolute h-7 w-7 -translate-x-1/2 -translate-y-full text-open"
-          style={{ left: "76%", top: "22%" }}
-          fill="white"
-          strokeWidth={2}
-        />
+        ) : (
+          <>
+            <svg
+              className="absolute inset-0 h-full w-full"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M22 76 Q40 76 46 50 Q52 22 76 22"
+                fill="none"
+                stroke="#2E7BC4"
+                strokeWidth="0.6"
+                strokeDasharray="1.4 3"
+                strokeLinecap="round"
+              />
+            </svg>
+            <MapPin
+              className="absolute h-7 w-7 -translate-x-1/2 -translate-y-full text-brand"
+              style={{ left: "22%", top: "76%" }}
+              fill="white"
+              strokeWidth={2}
+            />
+            <MapPin
+              className="absolute h-7 w-7 -translate-x-1/2 -translate-y-full text-open"
+              style={{ left: "76%", top: "22%" }}
+              fill="white"
+              strokeWidth={2}
+            />
+          </>
+        )}
       </div>
 
       <div className="-mt-[22px] flex-1 overflow-y-auto rounded-t-[22px] border-t border-border bg-bg px-5 pt-5 pb-[calc(22px+env(safe-area-inset-bottom))]">
